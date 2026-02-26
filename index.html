@@ -1,7 +1,131 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Professional Multi-Section Quiz</title>
+<style>
+
+body {
+font-family: Arial;
+margin:0;
+background:#f2f2f2;
+}
+
+.container {
+display:flex;
+height:100vh;
+}
+
+.question-area {
+flex:3;
+padding:20px;
+overflow-y:auto;
+background:white;
+}
+
+.option {
+margin:8px 0;
+padding:10px;
+border:1px solid #ccc;
+border-radius:5px;
+cursor:pointer;
+}
+
+.option.correct { background:#c8f7c5; }
+.option.wrong { background:#f7c5c5; }
+
+button {
+margin:5px;
+padding:8px 15px;
+cursor:pointer;
+}
+
+.nav-area {
+flex:1;
+background:#222;
+color:white;
+padding:15px;
+position:fixed;
+right:0;
+top:0;
+height:100%;
+overflow-y:auto;
+width:260px;
+}
+
+.summary {
+margin-bottom:15px;
+}
+
+.nav-grid {
+display:flex;
+flex-wrap:wrap;
+gap:5px;
+}
+
+.nav-btn {
+width:35px;
+height:35px;
+border:none;
+cursor:pointer;
+background:#555;
+color:white;
+}
+
+.nav-btn.current { background:#1e90ff; }
+.nav-btn.answered { background:#28a745; }
+.nav-btn.notanswered { background:#dc3545; }
+
+select {
+padding:6px;
+margin-bottom:15px;
+}
+
+</style>
+</head>
+<body>
+
+<div class="container">
+
+<div class="question-area" style="margin-right:260px;">
+
+<h2>CLASSICAL DANCE MCQ Quiz</h2>
+
+<label><b>Select Section:</b></label>
+<select id="sectionSelect"></select>
+
+<div id="progress"></div>
+<div id="question"></div>
+<div id="options"></div>
+
+<button onclick="prevQuestion()">Previous</button>
+<button onclick="nextQuestion()">Next</button>
+<button onclick="showResult()">Submit</button>
+
+<div id="explanation"></div>
+<div id="result"></div>
+
+</div>
+
+<div class="nav-area">
+
+<h3>Question Palette</h3>
+
+<div class="summary">
+Answered: <span id="answeredCount">0</span><br>
+Not Answered: <span id="notAnsweredCount">0</span><br>
+Not Visited: <span id="notVisitedCount">0</span>
+</div>
+
+<div class="nav-grid" id="navPanel"></div>
+
+</div>
+
+</div>
+
 <script>
 
 // =============================
-// SECTION BASED QUESTIONS
+// MULTIPLE SECTIONS
 // =============================
 const allSections = {
 
@@ -47,7 +171,7 @@ explanation: "Sangeet Natak Akademi recognised 8 classical dances."
 };
 
 // =============================
-// GLOBAL VARIABLES
+// VARIABLES
 // =============================
 let quizData = [];
 let current = 0;
@@ -195,11 +319,11 @@ document.getElementById("result").innerHTML =
 }
 
 // =============================
-// CREATE SECTION DROPDOWN
+// INITIAL LOAD
 // =============================
 window.onload = function(){
 
-let select = document.createElement("select");
+let select = document.getElementById("sectionSelect");
 
 for(let section in allSections){
 let option = document.createElement("option");
@@ -212,9 +336,10 @@ select.onchange = function(){
 loadSection(this.value);
 };
 
-document.querySelector(".question-area").prepend(select);
-
 loadSection(Object.keys(allSections)[0]);
 };
 
 </script>
+
+</body>
+</html>
