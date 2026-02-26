@@ -1,234 +1,58 @@
-<!DOCTYPE html>
-<html>
-<head>
-<title>Professional Quiz System</title>
-<style>
-
-body {
-font-family: Arial;
-margin:0;
-background:#f2f2f2;
-}
-
-.container {
-display:flex;
-height:100vh;
-}
-
-/* LEFT SIDE - QUESTION AREA */
-.question-area {
-flex:3;
-padding:20px;
-overflow-y:auto;
-background:white;
-}
-
-.option {
-margin:8px 0;
-padding:10px;
-border:1px solid #ccc;
-border-radius:5px;
-cursor:pointer;
-}
-
-.option.correct { background:#c8f7c5; }
-.option.wrong { background:#f7c5c5; }
-
-button {
-margin:5px;
-padding:8px 15px;
-}
-
-/* RIGHT SIDE - NAVIGATION PANEL */
-.nav-area {
-flex:1;
-background:#222;
-color:white;
-padding:15px;
-position:fixed;
-right:0;
-top:0;
-height:100%;
-overflow-y:auto;
-width:260px;
-}
-
-.summary {
-margin-bottom:15px;
-}
-
-.nav-grid {
-display:flex;
-flex-wrap:wrap;
-gap:5px;
-}
-
-.nav-btn {
-width:35px;
-height:35px;
-border:none;
-cursor:pointer;
-background:#555;
-color:white;
-}
-
-.nav-btn.current { background:#1e90ff; }
-.nav-btn.answered { background:#28a745; }
-.nav-btn.notanswered { background:#dc3545; }
-
-</style>
-</head>
-<body>
-
-<div class="container">
-
-<div class="question-area" style="margin-right:260px;">
-<h2> CLASSICAL DANCE MCQ Quiz</h2>
-
-<div id="progress"></div>
-<div id="question"></div>
-<div id="options"></div>
-
-<button onclick="prevQuestion()">Previous</button>
-<button onclick="nextQuestion()">Next</button>
-<button onclick="showResult()">Submit</button>
-
-<div id="explanation"></div>
-<div id="result"></div>
-
-</div>
-
-<div class="nav-area">
-
-<h3>Question Palette</h3>
-
-<div class="summary">
-Answered: <span id="answeredCount">0</span><br>
-Not Answered: <span id="notAnsweredCount">0</span><br>
-Not Visited: <span id="notVisitedCount">0</span>
-</div>
-
-<div class="nav-grid" id="navPanel"></div>
-
-</div>
-
-</div>
-
 <script>
 
 // =============================
-// ADD QUESTIONS HERE (Unlimited)
+// SECTION BASED QUESTIONS
 // =============================
-const quizData = [
+const allSections = {
+
+"Rasas Section": [
 {
-question: "How many Rasas are recognized in classical dances of India? / இந்திய பாரம்பரிய நடனங்களில் எத்தனை ரசங்கள் அங்கீகரிக்கப்பட்டுள்ளன?",
+question: "How many Rasas are recognized in classical dances of India?",
 options: ["7","8","9","10"],
 correctAnswer: "9",
-explanation: "There are nine Rasas recognized by the Ministry of Culture. / கலாச்சார அமைச்சகம் ஒன்பது ரசங்களை அங்கீகரித்துள்ளது."
+explanation: "There are nine Rasas."
 },
 {
-question: "Which Rasa represents Love? / அன்பை குறிக்கும் ரசம் எது?",
+question: "Which Rasa represents Love?",
 options: ["Karuna","Shringar","Veer","Shanta"],
 correctAnswer: "Shringar",
-explanation: "Shringar Rasa represents Love. / ஸ்ரிஙார ரசம் அன்பை குறிக்கிறது."
-},
+explanation: "Shringar Rasa represents Love."
+}
+],
+
+"Classical Dance States": [
 {
-question: "Hasya Rasa denotes which emotion? / ஹாஸ்ய ரசம் எந்த உணர்வைக் குறிக்கிறது?",
-options: ["Anger","Humorous","Fear","Peace"],
-correctAnswer: "Humorous",
-explanation: "Hasya Rasa represents humour or laughter. / ஹாஸ்ய ரசம் நகைச்சுவையை குறிக்கிறது."
-},
-{
-question: "Karuna Rasa is associated with which feeling? / கருணா ரசம் எந்த உணர்வுடன் தொடர்புடையது?",
-options: ["Heroism","Sorrow","Disgust","Wonder"],
-correctAnswer: "Sorrow",
-explanation: "Karuna Rasa represents sorrow or sadness. / கருணா ரசம் துக்கத்தை குறிக்கிறது."
-},
-{
-question: "Which Rasa expresses Anger? / கோபத்தை வெளிப்படுத்தும் ரசம் எது?",
-options: ["Raudra","Veer","Bhayanak","Adbhoot"],
-correctAnswer: "Raudra",
-explanation: "Raudra Rasa represents anger. / ரௌத்ர ரசம் கோபத்தை குறிக்கிறது."
-},
-{
-question: "Veer Rasa symbolizes what? / வீர ரசம் எதை குறிக்கிறது?",
-options: ["Fear","Peace","Heroism","Love"],
-correctAnswer: "Heroism",
-explanation: "Veer Rasa represents heroism and courage. / வீர ரசம் தைரியம் மற்றும் வீரத்தை குறிக்கிறது."
-},
-{
-question: "Bhayanak Rasa is related to which emotion? / பயானக ரசம் எந்த உணர்வை குறிக்கிறது?",
-options: ["Fear","Disgust","Wonder","Humour"],
-correctAnswer: "Fear",
-explanation: "Bhayanak Rasa represents fear. / பயானக ரசம் பயத்தை குறிக்கிறது."
-},
-{
-question: "Bibhats Rasa denotes which feeling? / பிபத்ஸ் ரசம் எந்த உணர்வை குறிக்கிறது?",
-options: ["Disgust","Love","Peace","Heroism"],
-correctAnswer: "Disgust",
-explanation: "Bibhats Rasa represents disgust. / பிபத்ஸ் ரசம் அருவருப்பை குறிக்கிறது."
-},
-{
-question: "Adbhoot Rasa is associated with which emotion? / அத்பூத் ரசம் எந்த உணர்வுடன் தொடர்புடையது?",
-options: ["Sorrow","Wonder","Anger","Peace"],
-correctAnswer: "Wonder",
-explanation: "Adbhoot Rasa represents wonder or amazement. / அத்பூத் ரசம் ஆச்சரியத்தை குறிக்கிறது."
-},
-{
-question: "Which Rasa represents Peace? / அமைதியை குறிக்கும் ரசம் எது?",
-options: ["Shanta","Shringar","Raudra","Veer"],
-correctAnswer: "Shanta",
-explanation: "Shanta Rasa represents peace and calmness. / சாந்த ரசம் அமைதி மற்றும் சமாதானத்தை குறிக்கிறது."
-},  
-{
-question: "Which organisation recognised 8 classical dances of India? / இந்தியாவின் 8 பாரம்பரிய நடனங்களை எந்த அமைப்பு அங்கீகரித்தது?",
-options: ["Sahitya Akademi","Sangeet Natak Akademi","Lalit Kala Akademi","IGNCA"],
-correctAnswer: "Sangeet Natak Akademi",
-explanation: "Sangeet Natak Akademi recognised 8 classical dances of India. / சங்கீத நாடக அகாடமி இந்தியாவின் 8 பாரம்பரிய நடனங்களை அங்கீகரித்துள்ளது."
-},
-{
-question: "Bharatanatyam is the classical dance of which state? / பாரதநாட்டியம் எந்த மாநிலத்தின் பாரம்பரிய நடனம்?",
+question: "Bharatanatyam belongs to which state?",
 options: ["Kerala","Tamil Nadu","Odisha","Assam"],
 correctAnswer: "Tamil Nadu",
-explanation: "Bharatanatyam belongs to Tamil Nadu. / பாரதநாட்டியம் தமிழ்நாட்டைச் சேர்ந்தது."
+explanation: "Bharatanatyam belongs to Tamil Nadu."
 },
 {
-question: "Kathak originated in which state? / கதக் எந்த மாநிலத்தில் தோன்றியது?",
-options: ["Uttar Pradesh","Manipur","Andhra Pradesh","Kerala"],
+question: "Kathak originated in which state?",
+options: ["Uttar Pradesh","Manipur","Kerala","Assam"],
 correctAnswer: "Uttar Pradesh",
-explanation: "Kathak is the classical dance of Uttar Pradesh. / கதக் உத்தரப் பிரதேசத்தின் பாரம்பரிய நடனம் ஆகும்."
-},
-{
-question: "Which two classical dances belong to Kerala? / கேரளாவைச் சேர்ந்த இரண்டு பாரம்பரிய நடனங்கள் எவை?",
-options: ["Kathak & Odissi","Kathakali & Mohiniyattam","Manipuri & Sattriya","Kuchipudi & Bharatanatyam"],
-correctAnswer: "Kathakali & Mohiniyattam",
-explanation: "Kathakali and Mohiniyattam are from Kerala. / கதகளி மற்றும் மோகினியாட்டம் கேரளாவைச் சேர்ந்தவை."
-},
-{
-question: "Kuchipudi is associated with which state? / குசிப்புடி எந்த மாநிலத்துடன் தொடர்புடையது?",
-options: ["Odisha","Andhra Pradesh","Assam","Tamil Nadu"],
-correctAnswer: "Andhra Pradesh",
-explanation: "Kuchipudi belongs to Andhra Pradesh. / குசிப்புடி ஆந்திரப் பிரதேசத்தைச் சேர்ந்தது."
-},
-{
-question: "Manipuri dance form belongs to which state? / மணிப்பூரி நடனம் எந்த மாநிலத்தைச் சேர்ந்தது?",
-options: ["Manipur","Kerala","Odisha","Uttar Pradesh"],
-correctAnswer: "Manipur",
-explanation: "Manipuri is the classical dance of Manipur. / மணிப்பூரி மணிப்பூரின் பாரம்பரிய நடனம் ஆகும்."
-},
-{
-question: "Odissi is the classical dance of which state? / ஒடிசி எந்த மாநிலத்தின் பாரம்பரிய நடனம்?",
-options: ["Assam","Odisha","Kerala","Tamil Nadu"],
-correctAnswer: "Odisha",
-explanation: "Odissi belongs to Odisha. / ஒடிசி ஒடிசா மாநிலத்தின் பாரம்பரிய நடனம் ஆகும்."
-},
-{
-question: "Sattriya classical dance belongs to which state? / சத்திரியா நடனம் எந்த மாநிலத்தைச் சேர்ந்தது?",
-options: ["Assam","Manipur","Kerala","Uttar Pradesh"],
-correctAnswer: "Assam",
-explanation: "Sattriya is the classical dance of Assam. / சத்திரியா அசாம் மாநிலத்தின் பாரம்பரிய நடனம் ஆகும்."
+explanation: "Kathak originated in Uttar Pradesh."
 }
-];
+],
+
+"General Section": [
+{
+question: "Which organisation recognised 8 classical dances?",
+options: ["Sahitya Akademi","Sangeet Natak Akademi","IGNCA","Lalit Kala Akademi"],
+correctAnswer: "Sangeet Natak Akademi",
+explanation: "Sangeet Natak Akademi recognised 8 classical dances."
+}
+]
+
+};
+
+// =============================
+// GLOBAL VARIABLES
+// =============================
+let quizData = [];
+let current = 0;
+let answers = [];
+let visited = [];
 
 // =============================
 // SHUFFLE FUNCTION
@@ -241,19 +65,28 @@ let j = Math.floor(Math.random() * (i + 1));
 return array;
 }
 
-// Shuffle questions
-shuffleArray(quizData);
+// =============================
+// LOAD SECTION
+// =============================
+function loadSection(sectionName){
 
-// Shuffle options
+quizData = JSON.parse(JSON.stringify(allSections[sectionName]));
+
+shuffleArray(quizData);
 quizData.forEach(q => shuffleArray(q.options));
 
-// =============================
-// QUIZ LOGIC
-// =============================
-let current = 0;
-let answers = new Array(quizData.length).fill(null);
-let visited = new Array(quizData.length).fill(false);
+current = 0;
+answers = new Array(quizData.length).fill(null);
+visited = new Array(quizData.length).fill(false);
 
+document.getElementById("result").innerHTML = "";
+
+loadQuestion();
+}
+
+// =============================
+// LOAD QUESTION
+// =============================
 function loadQuestion(){
 
 visited[current] = true;
@@ -361,9 +194,27 @@ document.getElementById("result").innerHTML =
 "<h3>Your Score: "+score+" / "+quizData.length+"</h3>";
 }
 
-loadQuestion();
+// =============================
+// CREATE SECTION DROPDOWN
+// =============================
+window.onload = function(){
+
+let select = document.createElement("select");
+
+for(let section in allSections){
+let option = document.createElement("option");
+option.value = section;
+option.text = section;
+select.appendChild(option);
+}
+
+select.onchange = function(){
+loadSection(this.value);
+};
+
+document.querySelector(".question-area").prepend(select);
+
+loadSection(Object.keys(allSections)[0]);
+};
 
 </script>
-
-</body>
-</html>
