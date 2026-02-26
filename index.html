@@ -39,6 +39,12 @@ padding:8px 15px;
 cursor:pointer;
 }
 
+.restart-btn {
+background:#ff9800;
+color:white;
+border:none;
+}
+
 .nav-area {
 flex:1;
 background:#222;
@@ -100,6 +106,7 @@ margin-bottom:15px;
 <button onclick="prevQuestion()">Previous</button>
 <button onclick="nextQuestion()">Next</button>
 <button onclick="showResult()">Submit</button>
+<button class="restart-btn" onclick="restartSection()">Restart Section</button>
 
 <div id="explanation"></div>
 <div id="result"></div>
@@ -125,11 +132,14 @@ Not Visited: <span id="notVisitedCount">0</span>
 <script>
 
 // =============================
-// MULTIPLE SECTIONS
+// SECTION CONFIGURATION
+// shuffleQuestions: true / false
 // =============================
 const allSections = {
 
-"Rasas Section": [
+"Rasas Section": {
+shuffleQuestions: true,
+questions: [
 {
 question: "How many Rasas are recognized in classical dances of India?",
 options: ["7","8","9","10"],
@@ -140,11 +150,14 @@ explanation: "There are nine Rasas."
 question: "Which Rasa represents Love?",
 options: ["Karuna","Shringar","Veer","Shanta"],
 correctAnswer: "Shringar",
-explanation: "Shringar Rasa represents Love."
+explanation: "Shringar represents love."
 }
-],
+]
+},
 
-"Classical Dance States": [
+"Classical Dance States": {
+shuffleQuestions: true,
+questions: [
 {
 question: "Bharatanatyam belongs to which state?",
 options: ["Kerala","Tamil Nadu","Odisha","Assam"],
@@ -157,35 +170,54 @@ options: ["Uttar Pradesh","Manipur","Kerala","Assam"],
 correctAnswer: "Uttar Pradesh",
 explanation: "Kathak originated in Uttar Pradesh."
 }
-],
+]
+},
 
-"General Section": [
+"BHARATHANATIYAM Section": {
+shuffleQuestions: true,
+questions: [
+{
+question: "Bharatanatyam was formerly known as what?",
+options: ["Dasiattam","Sadir Attam","Natya","Ekaharya"],
+correctAnswer: "Sadir Attam",
+explanation: "It was known as Sadir Attam."
+},
+{
+question: "Bharatanatyam emerged in which place?",
+options: ["Royal courts","Temples of South India","Villages","Modern theatres"],
+correctAnswer: "Temples of South India",
+explanation: "It emerged in South Indian temples."
+}
+]
+},
+
+"General Section": {
+shuffleQuestions: false,
+questions: [
 {
 question: "Which organisation recognised 8 classical dances?",
 options: ["Sahitya Akademi","Sangeet Natak Akademi","IGNCA","Lalit Kala Akademi"],
 correctAnswer: "Sangeet Natak Akademi",
-explanation: "Sangeet Natak Akademi recognised 8 classical dances."
+explanation: "Recognised by Sangeet Natak Akademi."
 },
 {
-question: "Bharatanatyam was formerly known as?",
-options: ["Dasiattam","Sadir Attam","Natya","Ekaharya"],
-correctAnswer: "Sadir Attam",
-explanation: "Bharatanatyam was formerly known as Sadir Attam."
+question: "Sattriya classical dance belongs to which state?",
+options: ["Assam","Kerala","Tamil Nadu","Odisha"],
+correctAnswer: "Assam",
+explanation: "Sattriya belongs to Assam."
 }
 ]
+}
 
 };
 
-// =============================
-// VARIABLES
 // =============================
 let quizData = [];
 let current = 0;
 let answers = [];
 let visited = [];
+let currentSection = "";
 
-// =============================
-// SHUFFLE FUNCTION
 // =============================
 function shuffleArray(array){
 for(let i = array.length - 1; i > 0; i--){
@@ -196,18 +228,18 @@ return array;
 }
 
 // =============================
-// LOAD SECTION
-// =============================
 function loadSection(sectionName){
 
-quizData = JSON.parse(JSON.stringify(allSections[sectionName]));
+currentSection = sectionName;
 
-// 🔥 Only shuffle if NOT General Section
-if(sectionName !== "General Section"){
-    shuffleArray(quizData);
+let section = allSections[sectionName];
+
+quizData = JSON.parse(JSON.stringify(section.questions));
+
+if(section.shuffleQuestions){
+shuffleArray(quizData);
 }
 
-// Options shuffle for all sections
 quizData.forEach(q => shuffleArray(q.options));
 
 current = 0;
@@ -220,7 +252,10 @@ loadQuestion();
 }
 
 // =============================
-// LOAD QUESTION
+function restartSection(){
+loadSection(currentSection);
+}
+
 // =============================
 function loadQuestion(){
 
@@ -329,8 +364,6 @@ document.getElementById("result").innerHTML =
 "<h3>Your Score: "+score+" / "+quizData.length+"</h3>";
 }
 
-// =============================
-// INITIAL LOAD
 // =============================
 window.onload = function(){
 
