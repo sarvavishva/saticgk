@@ -31,7 +31,6 @@ border-radius:5px;
 cursor:pointer;
 }
 
-.option.selected { background:#d0e6ff; }
 .option.correct { background:#c8f7c5; }
 .option.wrong { background:#f7c5c5; }
 
@@ -84,7 +83,7 @@ color:white;
 <div class="container">
 
 <div class="question-area" style="margin-right:260px;">
-<h2>POLITY-PREAMLE MCQ Quiz</h2>
+<h2>POLITY-PREAMBLE MCQ Quiz</h2>
 
 <div id="progress"></div>
 <div id="question"></div>
@@ -117,57 +116,56 @@ Not Visited: <span id="notVisitedCount">0</span>
 
 <script>
 
+// =============================
+// ADD QUESTIONS HERE (Unlimited)
+// =============================
 const quizData = [
 {
-question: "How many classical dances are recognised by the Sangeet Natak Akademi? / சங்கீத நாடக அகாடமி எத்தனை பாரம்பரிய நடனங்களை அங்கீகரித்துள்ளது?",
+question: "How many classical dances are recognised by the Sangeet Natak Akademi?",
 options: ["6","7","8","9"],
-answer: 2,
-explanation: "Sangeet Natak Akademi recognised 8 classical dances of India. / சங்கீத நாடக அகாடமி இந்தியாவின் 8 பாரம்பரிய நடனங்களை அங்கீகரித்துள்ளது."
+correctAnswer: "8",
+explanation: "Sangeet Natak Akademi recognised 8 classical dances."
 },
 {
-question: "Which classical dance belongs to Tamil Nadu? / தமிழ்நாட்டைச் சேர்ந்த பாரம்பரிய நடனம் எது?",
+question: "Which classical dance belongs to Tamil Nadu?",
 options: ["Kathak","Bharatanatyam","Odissi","Sattriya"],
-answer: 1,
-explanation: "Bharatanatyam is the classical dance of Tamil Nadu. / பாரதநாட்டியம் தமிழ்நாட்டின் பாரம்பரிய நடனமாகும்."
+correctAnswer: "Bharatanatyam",
+explanation: "Bharatanatyam is the classical dance of Tamil Nadu."
 },
 {
-question: "Kathak is the classical dance of which state? / கதக் எந்த மாநிலத்தின் பாரம்பரிய நடனம்?",
+question: "Kathak is the classical dance of which state?",
 options: ["Kerala","Assam","Uttar Pradesh","Manipur"],
-answer: 2,
-explanation: "Kathak originated in Uttar Pradesh. / கதக் உத்தரப் பிரதேசத்தில் தோன்றியது."
+correctAnswer: "Uttar Pradesh",
+explanation: "Kathak originated in Uttar Pradesh."
 },
 {
-question: "Which two classical dances are associated with Kerala? / கேரளாவுடன் தொடர்புடைய இரண்டு பாரம்பரிய நடனங்கள் எவை?",
-options: ["Kathak & Odissi","Kathakali & Mohiniyattam","Kuchipudi & Manipuri","Sattriya & Bharatanatyam"],
-answer: 1,
-explanation: "Kathakali and Mohiniyattam belong to Kerala. / கதகளி மற்றும் மோகினியாட்டம் கேரளாவைச் சேர்ந்தவை."
-},
-{
-question: "Kuchipudi is the classical dance form of which state? / குசிப்புடி எந்த மாநிலத்தின் பாரம்பரிய நடனம்?",
+question: "Kuchipudi is from which state?",
 options: ["Odisha","Andhra Pradesh","Manipur","Tamil Nadu"],
-answer: 1,
-explanation: "Kuchipudi is from Andhra Pradesh. / குசிப்புடி ஆந்திரப் பிரதேசத்தைச் சேர்ந்தது."
-},
-{
-question: "Manipuri dance is associated with which state? / மணிப்பூரி நடனம் எந்த மாநிலத்துடன் தொடர்புடையது?",
-options: ["Assam","Manipur","Kerala","Odisha"],
-answer: 1,
-explanation: "Manipuri is the classical dance of Manipur. / மணிப்பூரி மணிப்பூரின் பாரம்பரிய நடனம் ஆகும்."
-},
-{
-question: "Odissi originated in which state? / ஒடிசி எந்த மாநிலத்தில் தோன்றியது?",
-options: ["Odisha","Kerala","Uttar Pradesh","Assam"],
-answer: 0,
-explanation: "Odissi is the classical dance of Odisha. / ஒடிசி ஒடிசா மாநிலத்தின் பாரம்பரிய நடனம் ஆகும்."
-},
-{
-question: "Sattriya dance belongs to which state? / சத்திரியா நடனம் எந்த மாநிலத்தைச் சேர்ந்தது?",
-options: ["Assam","Manipur","Kerala","Tamil Nadu"],
-answer: 0,
-explanation: "Sattriya is the classical dance of Assam. / சத்திரியா அசாம் மாநிலத்தின் பாரம்பரிய நடனம் ஆகும்."
+correctAnswer: "Andhra Pradesh",
+explanation: "Kuchipudi is from Andhra Pradesh."
 }
 ];
 
+// =============================
+// SHUFFLE FUNCTION
+// =============================
+function shuffleArray(array){
+for(let i = array.length - 1; i > 0; i--){
+let j = Math.floor(Math.random() * (i + 1));
+[array[i], array[j]] = [array[j], array[i]];
+}
+return array;
+}
+
+// Shuffle questions
+shuffleArray(quizData);
+
+// Shuffle options
+quizData.forEach(q => shuffleArray(q.options));
+
+// =============================
+// QUIZ LOGIC
+// =============================
 let current = 0;
 let answers = new Array(quizData.length).fill(null);
 let visited = new Array(quizData.length).fill(false);
@@ -190,8 +188,10 @@ for(let i=0;i<q.options.length;i++){
 let className = "option";
 
 if(answers[current] !== null){
-if(i === q.answer) className += " correct";
-else if(i === answers[current]) className += " wrong";
+if(q.options[i] === q.correctAnswer)
+className += " correct";
+else if(i === answers[current])
+className += " wrong";
 }
 
 html += '<div class="'+className+'" onclick="selectAnswer('+i+')">'+q.options[i]+'</div>';
@@ -268,7 +268,9 @@ function showResult(){
 let score = 0;
 
 for(let i=0;i<quizData.length;i++){
-if(answers[i] === quizData[i].answer) score++;
+if(quizData[i].options[answers[i]] === quizData[i].correctAnswer){
+score++;
+}
 }
 
 document.getElementById("result").innerHTML =
